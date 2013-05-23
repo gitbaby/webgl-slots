@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="gl-matrix.js"></script>
+<script type="text/javascript" src="solution.js"></script>
+<script id="shader-fs" type="x-shader/x-fragment">
+	precision mediump float;
+	varying vec2 vTextureCoord;
+	uniform sampler2D uSampler;
+	uniform float uAlpha;
+	void main(void) {
+		vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+		gl_FragColor = vec4(textureColor.rgb, textureColor.a * uAlpha);
+	}
+</script>
+<script id="shader-vs" type="x-shader/x-vertex">
+	attribute vec3 aVertexPosition;
+	attribute vec2 aTextureCoord;
+	uniform mat4 uMVMatrix;
+	uniform mat4 uPMatrix;
+	varying vec2 vTextureCoord;
+    varying vec3 vLightWeighting;
+	void main(void) {
+		gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+		vTextureCoord = aTextureCoord;
+	}
+</script>
+</head>
+<body>
+	<div style="text-align:center">
+		<canvas id="canvas" width="700" height="500"></canvas>
+		<p>
+			<input type="button" value="Spin" onclick="solution.spin()" style="width:100px;" />
+		</p>
+		<p>
+			<input type="checkbox" id="showInnards" onclick="solution.showInnards(this.checked)" />
+			<label for="showInnards">Show innards</label>
+			<input type="checkbox" id="flatPerspective" onclick="solution.usePerspective(!this.checked)" />
+			<label for="flatPerspective">Flat perspective</label>
+		</p>
+	</div>
+</body>
+<script type="text/javascript">
+	var solution = new Solution('canvas', 'shader-fs', 'shader-vs');
+	solution.start();
+</script>
+</html>
